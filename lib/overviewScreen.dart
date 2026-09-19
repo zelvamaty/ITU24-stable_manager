@@ -5,8 +5,9 @@ import 'horseScreen.dart';
 class OverviewScreen extends StatefulWidget {
   final Function(int) onCoinsLost;
   Group? group;
+
   OverviewScreen({super.key, this.group, required this.onCoinsLost}) {
-    print('OverviewScreen constructor - group: ${group?.id}'); // Debug print
+    print('OverviewScreen constructor - group: ${group?.id}');
   }
 
   @override
@@ -25,11 +26,10 @@ class _OverviewScreenState extends State<OverviewScreen> {
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
 
-
     return Scaffold(
       body: Stack(
         children: [
-          // Background image for the entire screen
+          // Full-screen background image for the overview cards.
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -43,14 +43,14 @@ class _OverviewScreenState extends State<OverviewScreen> {
             ),
           ),
 
-          // Larger box container (for stable) (smaller one for trainer)
+          // Card showing the stable overview and upgrade action.
           Positioned(
             top: screenHeight * 0.01,
             left: 16,
             right: 16,
             child: Container(
-              width: screenWidth - 32, // Full width minus padding
-              height: screenHeight * 0.38, // Slightly smaller than before
+              width: screenWidth - 32,
+              height: screenHeight * 0.38,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
@@ -64,9 +64,8 @@ class _OverviewScreenState extends State<OverviewScreen> {
               ),
               child: Column(
                 children: [
-                  // Image that overlaps into the text section
                   Container(
-                    height: screenHeight * 0.2, // Image height (smaller part)
+                    height: screenHeight * 0.2,
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage('assets/stable.jpg'),
@@ -78,8 +77,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
                       ),
                     ),
                   ),
-
-                  // Box for the stable content
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Row(
@@ -139,7 +136,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
                                 if (widget.group!.stable.level < 5) {
                                   await widget.onCoinsLost(widget.group!.stable.level_up_cost);
                                 }
-                                // If the level-up was successful
                                 final updatedGroup = await fetchGroupById(widget.group!.id);
                                 setState(() {
                                   if (widget.group!.stable.level < 5) {
@@ -147,20 +143,17 @@ class _OverviewScreenState extends State<OverviewScreen> {
                                   }
                                   widget.group = updatedGroup;
                                 });
-
                               } else {
-                                // Optionally show an error message if the level-up failed
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text('stáj nejde více vylepšit'),
                                   ),
                                 );
-
                               }
                             }
                           },
                           child: const Text(
-                              'Vylepšit',
+                            'Vylepšit',
                             style: TextStyle(
                               color: Colors.black,
                               fontSize: 16,
@@ -175,14 +168,14 @@ class _OverviewScreenState extends State<OverviewScreen> {
             ),
           ),
 
-          // Smaller box container below the first one
+          // Card showing the trainer overview and upgrade action.
           Positioned(
-            top: screenHeight * 0.44, // Position below the first box
+            top: screenHeight * 0.44,
             left: 16,
             right: 16,
             child: Container(
-              width: screenWidth - 32, // Full width minus padding
-              height: screenHeight * 0.33, // Smaller height
+              width: screenWidth - 32,
+              height: screenHeight * 0.33,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(16),
@@ -196,9 +189,8 @@ class _OverviewScreenState extends State<OverviewScreen> {
               ),
               child: Column(
                 children: [
-                  // Smaller image or content can go here
                   Container(
-                    height: screenHeight * 0.15, // Smaller image height
+                    height: screenHeight * 0.15,
                     decoration: BoxDecoration(
                       image: DecorationImage(
                         image: AssetImage('assets/trainer.jpg'),
@@ -210,8 +202,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
                       ),
                     ),
                   ),
-
-                  // Content area for the second box
                   Padding(
                     padding: const EdgeInsets.all(10.0),
                     child: Row(
@@ -268,10 +258,9 @@ class _OverviewScreenState extends State<OverviewScreen> {
                                   content: Text('Nemáte peníze na vylepšení trenéra'),
                                 ),
                               );
-                            }else{
+                            } else {
                               final success = await levelUpTrainer(widget.group!.id);
                               if (success) {
-                                // If the level-up was successful
                                 setState(() {
                                   if (widget.group!.trainer.level < 7) {
                                     widget.group!.trainer.level += 1;
@@ -281,7 +270,6 @@ class _OverviewScreenState extends State<OverviewScreen> {
                                   await widget.onCoinsLost(widget.group!.trainer.level_up_cost);
                                 }
                               } else {
-                                // Optionally show an error message if the level-up failed
                                 ScaffoldMessenger.of(context).showSnackBar(
                                   SnackBar(
                                     content: Text('trener nejde více vylepšit'),
@@ -310,3 +298,4 @@ class _OverviewScreenState extends State<OverviewScreen> {
     );
   }
 }
+

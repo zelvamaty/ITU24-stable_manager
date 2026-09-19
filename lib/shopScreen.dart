@@ -1,8 +1,4 @@
 import 'package:flutter/material.dart';
-
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
 import 'package:untitledflutter/api_stuff.dart';
 
 class shopScreen extends StatefulWidget {
@@ -10,18 +6,18 @@ class shopScreen extends StatefulWidget {
   final Function(int) onCoinsSpent;
   final Group? group;
 
-  const shopScreen(
-      {super.key,
-      required this.onResourcesAdded,
-      required this.onCoinsSpent,
-      required this.group});
+  const shopScreen({
+    super.key,
+    required this.onResourcesAdded,
+    required this.onCoinsSpent,
+    required this.group,
+  });
 
   @override
   _shopScreenState createState() => _shopScreenState();
 }
 
 class _shopScreenState extends State<shopScreen> {
-
   Future<void> fetchStandingsData() async {
     if (widget.group == null) {
       throw Exception("Group is null");
@@ -33,16 +29,11 @@ class _shopScreenState extends State<shopScreen> {
   int resourcePrice = 0;
   List<Standing> standing = [];
 
-  final TextEditingController _controller = TextEditingController();
-
   @override
   void initState() {
     super.initState();
-    int? groupID = widget.group?.id;
-    Group group = widget.group!;
     fetchStandingsData();
   }
-
 
   void _incrementResources1() {
     setState(() {
@@ -91,7 +82,7 @@ class _shopScreenState extends State<shopScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Minus Button
+        // Decrease selected resource quantity.
         ElevatedButton(
           onPressed: onDecrementPressed,
           style: ElevatedButton.styleFrom(
@@ -108,7 +99,6 @@ class _shopScreenState extends State<shopScreen> {
           ),
         ),
         SizedBox(width: 40),
-
         Text(
           '$value',
           style: TextStyle(
@@ -117,7 +107,7 @@ class _shopScreenState extends State<shopScreen> {
           ),
         ),
         SizedBox(width: 40),
-        // Plus Button
+        // Increase selected resource quantity.
         ElevatedButton(
           onPressed: onIncrementPressed,
           style: ElevatedButton.styleFrom(
@@ -142,7 +132,6 @@ class _shopScreenState extends State<shopScreen> {
     String selectedGender = 'muž';
     int finalPrice = 20;
     int finalLevel = 1;
-    Standing? selectedStanding;
 
     showDialog(
       context: context,
@@ -251,15 +240,15 @@ class _shopScreenState extends State<shopScreen> {
                   return;
                 }
 
-                // Perform horse insertion
+                // Add a horse definition to the shop catalogue.
                 bool success = await addHorseToShop(
-                    finalLevel,
-                    nameController.text,
-                    finalPrice, // Default price
-                    selectedGender);
+                  finalLevel,
+                  nameController.text,
+                  finalPrice,
+                  selectedGender,
+                );
 
                 if (success) {
-                  // Refresh the standings
                   setState(() {
                     fetchShopItems();
                   });
@@ -277,11 +266,11 @@ class _shopScreenState extends State<shopScreen> {
       },
     );
   }
+
   void _showSelectStandingDialog(
       BuildContext context, int groupID, int itemID, List<Standing> standing) {
     Standing? selectedStanding;
     List<Standing> availableStandings = standing.where((s) => s.horse == null).toList();
-    print(availableStandings);
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -293,7 +282,7 @@ class _shopScreenState extends State<shopScreen> {
                 mainAxisSize: MainAxisSize.min,
                 children: availableStandings.map((standing) {
                   return ListTile(
-                    title: Text('${standing.id} ' 'max kúň lvl ' '${standing.max_level_of_horse}'), // Assuming `Standing` has a `name` field
+                    title: Text('${standing.id} max kúň lvl ${standing.max_level_of_horse}'),
                     leading: Radio<Standing>(
                       value: standing,
                       groupValue: selectedStanding,
@@ -317,10 +306,12 @@ class _shopScreenState extends State<shopScreen> {
               onPressed: () async {
                 if (selectedStanding != null) {
                   bool success = await buyHorseFromShop(
-                      groupID, selectedStanding!.id, itemID);
+                    groupID,
+                    selectedStanding!.id,
+                    itemID,
+                  );
 
                   if (success) {
-                    // Refresh the standings
                     setState(() {
                       fetchShopItems();
                     });
@@ -346,7 +337,6 @@ class _shopScreenState extends State<shopScreen> {
 
   @override
   Widget build(BuildContext context) {
-    Group group;
     final screenHeight = MediaQuery.of(context).size.height;
     final screenWidth = MediaQuery.of(context).size.width;
     int groupID = widget.group?.id ?? 0;
@@ -354,7 +344,7 @@ class _shopScreenState extends State<shopScreen> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background image for the entire screen
+          // Full-screen background image for the shop UI.
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -368,20 +358,18 @@ class _shopScreenState extends State<shopScreen> {
             ),
           ),
 
-          // Single Horse Box
+          // Resource purchase panel.
           Positioned(
             left: 0,
             right: 0,
-            top: screenHeight * 0.02, // Adjust vertical position
+            top: screenHeight * 0.02,
             child: Center(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
-                  // Row for Resource Amount and Price Section
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      // Resource Amount Section
                       Column(
                         children: [
                           Text(
@@ -394,7 +382,6 @@ class _shopScreenState extends State<shopScreen> {
                           SizedBox(height: 10),
                           Text(
                             '$resourceAmount',
-                            // Replace with your dynamic variable
                             style: TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.bold,
@@ -402,8 +389,7 @@ class _shopScreenState extends State<shopScreen> {
                           ),
                         ],
                       ),
-                      SizedBox(width: 40), // Add space between the columns
-                      // Resource Price Section
+                      SizedBox(width: 40),
                       Column(
                         children: [
                           Text(
@@ -416,7 +402,6 @@ class _shopScreenState extends State<shopScreen> {
                           SizedBox(height: 10),
                           Text(
                             '$resourcePrice',
-                            // Replace with your dynamic variable
                             style: TextStyle(
                               fontSize: 30,
                               fontWeight: FontWeight.bold,
@@ -427,8 +412,6 @@ class _shopScreenState extends State<shopScreen> {
                     ],
                   ),
                   SizedBox(height: 20),
-
-                  // Row for Resource Rows and Buy Button
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -448,29 +431,23 @@ class _shopScreenState extends State<shopScreen> {
                         ],
                       ),
                       SizedBox(width: 20),
-                      // Add space between the resource rows and the button
                       ElevatedButton(
                         onPressed: () async {
-                          if (widget.group != null &&
-                              widget.group!.coins < resourcePrice) {
+                          if (widget.group != null && widget.group!.coins < resourcePrice) {
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
                                 content: Text('Nemáte peníze na koupi zdrojů'),
                               ),
                             );
                           } else {
-                            final success =
-                                await buyResources(groupID, resourceAmount);
+                            final success = await buyResources(groupID, resourceAmount);
                             if (success) {
                               setState(() {
-                                widget.onResourcesAdded(
-                                    resourceAmount); // Callback to update resources
-                                widget.onCoinsSpent(
-                                    resourcePrice); // Callback to update coins
+                                widget.onResourcesAdded(resourceAmount);
+                                widget.onCoinsSpent(resourcePrice);
                               });
                               resetResources();
                             } else {
-                              // error if purchase failed
                               ScaffoldMessenger.of(context).showSnackBar(
                                 SnackBar(
                                   content: Text('Nákup se nezdařil'),
@@ -482,8 +459,7 @@ class _shopScreenState extends State<shopScreen> {
                         style: ElevatedButton.styleFrom(
                           foregroundColor: Colors.black,
                           backgroundColor: Colors.white,
-                          padding: EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 13),
+                          padding: EdgeInsets.symmetric(horizontal: 30, vertical: 13),
                         ),
                         child: Text(
                           'Koupit',
@@ -500,10 +476,9 @@ class _shopScreenState extends State<shopScreen> {
             ),
           ),
 
-          // Shop Items
+          // Shop inventory and horse list.
           Positioned(
             top: screenHeight * 0.35,
-            // Start below the other buttons
             left: 0,
             right: 0,
             bottom: 0,
@@ -516,18 +491,15 @@ class _shopScreenState extends State<shopScreen> {
                   print('Error: ${snapshot.error}');
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else {
-                  // Create a list that includes existing items and a static "Add Horse" item
                   List<dynamic> combinedItems = [];
                   if (snapshot.hasData && snapshot.data!.isNotEmpty) {
                     combinedItems.addAll(snapshot.data!);
                   }
-                  combinedItems.add(
-                      'AddHorseItem'); // Special marker for the add horse box
+                  combinedItems.add('AddHorseItem');
 
                   return ListView.builder(
                     itemCount: combinedItems.length,
                     itemBuilder: (context, index) {
-                      // Check if this is the last item (Add Horse box)
                       if (combinedItems[index] == 'AddHorseItem') {
                         return Padding(
                           padding: const EdgeInsets.all(16.0),
@@ -547,7 +519,6 @@ class _shopScreenState extends State<shopScreen> {
                             ),
                             child: Row(
                               children: [
-                                // Small Stable Image
                                 Container(
                                   width: screenWidth * 0.4,
                                   decoration: BoxDecoration(
@@ -561,12 +532,10 @@ class _shopScreenState extends State<shopScreen> {
                                     ),
                                   ),
                                 ),
-                                // Add Horse Button
                                 Expanded(
                                   child: Center(
                                     child: ElevatedButton(
-                                      onPressed: () =>
-                                          _showAddHorseDialog(context),
+                                      onPressed: () => _showAddHorseDialog(context),
                                       child: Text('Add Horse'),
                                     ),
                                   ),
@@ -577,7 +546,6 @@ class _shopScreenState extends State<shopScreen> {
                         );
                       }
 
-                      // Regular shop items
                       ShopItem item = combinedItems[index];
                       bool hasHorse = item.name.isNotEmpty;
                       return Padding(
@@ -598,7 +566,6 @@ class _shopScreenState extends State<shopScreen> {
                           ),
                           child: Row(
                             children: [
-                              // Image Section (40% of width)
                               Container(
                                 width: screenWidth * 0.4,
                                 decoration: BoxDecoration(
@@ -614,16 +581,13 @@ class _shopScreenState extends State<shopScreen> {
                                   ),
                                 ),
                               ),
-                              // Horse Details Section (60% of width)
                               Expanded(
                                 child: Padding(
                                   padding: const EdgeInsets.all(16.0),
                                   child: Column(
-                                    crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    crossAxisAlignment: CrossAxisAlignment.start,
                                     mainAxisAlignment: MainAxisAlignment.center,
                                     children: hasHorse
-                                    // Display horse details if available
                                         ? [
                                             Text(
                                               'Jméno: ${item.name}',
@@ -657,18 +621,16 @@ class _shopScreenState extends State<shopScreen> {
                                             ),
                                             ElevatedButton(
                                               onPressed: () => _showSelectStandingDialog(
-                                                  context,
-                                                  groupID,
+                                                context,
+                                                groupID,
                                                 item.id,
-                                                  standing
-                                                  ),
+                                                standing,
+                                              ),
                                               style: ElevatedButton.styleFrom(
                                                 foregroundColor: Colors.black,
                                                 backgroundColor: Colors.white,
                                               ),
-                                              child: Text(
-                                                  'Koupit koně'
-                                              ),
+                                              child: Text('Koupit koně'),
                                             ),
                                             ElevatedButton(
                                               onPressed: () async {
@@ -690,14 +652,9 @@ class _shopScreenState extends State<shopScreen> {
                                                 backgroundColor: WidgetStateProperty.all<Color>(Colors.red),
                                                 foregroundColor: WidgetStateProperty.all<Color>(Colors.black),
                                               ),
-                                              child: Text(
-
-                                                  'Smazat koně'
-                                              ),
+                                              child: Text('Smazat koně'),
                                             ),
                                           ]
-
-                                    // Display "No horse available" if no horse detailss
                                         : [
                                             Text(
                                               'No horse available',
@@ -726,3 +683,4 @@ class _shopScreenState extends State<shopScreen> {
     );
   }
 }
+

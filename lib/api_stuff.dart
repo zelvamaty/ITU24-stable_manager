@@ -3,7 +3,7 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 import 'overviewScreen.dart';
 
-//api request to get groups
+// Fetch all groups from the backend API.
 Future<List<Group>> fetchGroups() async {
   final response = await http.get(Uri.parse('http://10.0.2.2:5000/api/groups'));
 
@@ -26,7 +26,7 @@ Future<List<Group>> fetchGroups() async {
   }
 }
 
-//api request fetch group by id
+// Fetch a single group by its identifier.
 Future<Group> fetchGroupById(int groupId) async {
   final response = await http.get(Uri.parse('http://10.0.2.2:5000/api/groups/$groupId'));
 
@@ -37,35 +37,35 @@ Future<Group> fetchGroupById(int groupId) async {
   }
 }
 
-//api post to level up stable
+// Raise the stable level for the selected group.
 Future<bool> levelUpStable(int groupId) async {
   final url = Uri.parse('http://10.0.2.2:5000/api/groups/$groupId/stable/level-up');
   final response = await http.post(url);
 
   if (response.statusCode == 200) {
-    return true; // Successful level up
+    return true;
   } else {
     print("Failed to level up stable: ${response.body}");
-    return false; // Level up failed
+    return false;
   }
 }
 
-//api post to level up trainer
+// Raise the trainer level for the selected group.
 Future<bool> levelUpTrainer(int groupId) async {
   final url = Uri.parse('http://10.0.2.2:5000/api/groups/$groupId/trainer/level-up');
   final response = await http.post(url);
 
   if (response.statusCode == 200) {
-    return true; // Successful level up
+    return true;
   } else {
-    print("Failed to level up stable: ${response.body}");
-    return false; // Level up failed
+    print("Failed to level up trainer: ${response.body}");
+    return false;
   }
 }
 
-//api POST request to add group
+// Create a new group in the backend.
 Future<void> addGroup(String color, String name) async {
-  final url = Uri.parse('http://10.0.2.2:5000/api/groups'); // Use 127.0.0.1 on a real device
+  final url = Uri.parse('http://10.0.2.2:5000/api/groups');
 
   final response = await http.post(
     url,
@@ -85,9 +85,9 @@ Future<void> addGroup(String color, String name) async {
   }
 }
 
-//api DELETE request to delete group
+// Delete an existing group by ID.
 Future<void> deleteGroup(int id) async {
-  final url = Uri.parse('http://10.0.2.2:5000/api/groups/$id'); // Update IP as needed
+  final url = Uri.parse('http://10.0.2.2:5000/api/groups/$id');
 
   final response = await http.delete(url);
 
@@ -98,7 +98,7 @@ Future<void> deleteGroup(int id) async {
   }
 }
 
-//api PATCH request to add coins
+// Add coins to the selected group's resource balance.
 Future<void> addCoins(int groupId, int coinAmount) async {
   final url = Uri.parse('http://10.0.2.2:5000/api/groups/$groupId/resources');
   try {
@@ -123,7 +123,7 @@ Future<void> addCoins(int groupId, int coinAmount) async {
   }
 }
 
-//api POST request to buy water and wheat
+// Buy water and wheat for the selected group.
 Future<bool> buyResources(int groupId, int resourceAmount) async {
   final url = Uri.parse('http://10.0.2.2:5000/api/groups/$groupId/buy-items');
   try {
@@ -152,35 +152,33 @@ Future<bool> buyResources(int groupId, int resourceAmount) async {
   }
 }
 
-//api GET request to get standings
+// Fetch all standings for the selected group.
 Future<List<Standing>> fetchStandings(int groupId) async {
   final response = await http.get(Uri.parse('http://10.0.2.2:5000/api/groups/$groupId/standings'));
   if (response.statusCode == 200) {
     List jsonResponse = json.decode(response.body);
     List<Standing> standings = jsonResponse.map((data) => Standing.fromJson(data)).toList();
-
-
     return standings;
   } else {
     throw Exception('Failed to load standings');
   }
 }
 
-//api POST request to level up standing
+// Raise the level of a standing.
 Future<bool> levelUpStanding(int groupId, int standingId) async {
   final url = Uri.parse(
       'http://10.0.2.2:5000/api/groups/$groupId/standings/$standingId/level-up');
   final response = await http.post(url);
 
   if (response.statusCode == 200) {
-    return true; // Successful level up
+    return true;
   } else {
     print("Failed to level up standing: ${response.body}");
-    return false; // Level up failed
+    return false;
   }
 }
 
-//api POST request to insert horse http://localhost:5000/api/groups/0/standings/0/horse
+// Insert a new horse into a standing.
 Future<bool> insertHorse(int groupId, int standingId, int level,
     String name, int price_buy, String gender) async {
   final url = Uri.parse(
@@ -194,74 +192,64 @@ Future<bool> insertHorse(int groupId, int standingId, int level,
       'level': level,
       'name': name,
       'price_buy': price_buy,
-      'gender' : gender,
+      'gender': gender,
       'img_path': 'assets/horse.png',
       'food_per_day': 6,
       'water_per_day': 6,
     }),
   );
+
   if (response.statusCode == 200) {
-    return true; // Successful level up
+    return true;
   } else {
     print("Failed to insert horse: ${response.body}");
-    return false; // Level up failed
+    return false;
   }
 }
 
-
-
-//api POST request to train horse
+// Start horse training for the selected standing.
 Future<bool> levelUpHorse(int groupId, int standingId, int horseId) async {
   final url = Uri.parse(
       'http://10.0.2.2:5000/api/groups/$groupId/standings/$standingId/train-horse');
   final response = await http.post(url);
 
   if (response.statusCode == 200) {
-    return true; // Successful level up
+    return true;
   } else {
     print("Failed to level up horse: ${response.body}");
-    return false; // Level up failed
+    return false;
   }
 }
 
-//api POST request to release horse /api/groups/<id>/standings/<standing_id>/release-horse
+// Release a horse from the selected standing.
 Future<bool> releaseHorse(int groupId, int standingId, int horseId) async {
   final url = Uri.parse(
       'http://10.0.2.2:5000/api/groups/$groupId/standings/$standingId/release-horse');
   final response = await http.post(url);
 
   if (response.statusCode == 200) {
-    return true; // Successful level up
+    return true;
   } else {
     print("Failed to release horse: ${response.body}");
-    return false; // Level up failed
+    return false;
   }
 }
 
-//api POST request to sell horse /api/groups/<id>/standings/<standing_id>/sell-horse
+// Sell a horse from the selected standing.
 Future<bool> sellHorse(int groupId, int standingId, int horseId) async {
   final url = Uri.parse(
       'http://10.0.2.2:5000/api/groups/$groupId/standings/$standingId/sell-horse');
   final response = await http.post(url);
 
   if (response.statusCode == 200) {
-    return true; // Successful level up
+    return true;
   } else {
     print("Failed to sell horse: ${response.body}");
-    return false; // Level up failed
+    return false;
   }
 }
 
-//api request to feed horse app.route('/api/groups/<id>/standings/<standing_id>/feed-horse', methods=['POST'])
-// def standing_feed_horse(id, standing_id):
-//     data = request.json
-//     response = model.standing_feed_horse(
-//         int(id),
-//         int(standing_id),
-//         int(data['wheat']),
-//         int(data['water']),
-//         )
-
+// Feed wheat and water to a horse in the selected standing.
 Future<bool> feedHorse(int groupId, int standingId, int wheat, int water) async {
   final url = Uri.parse(
       'http://10.0.2.2:5000/api/groups/$groupId/standings/$standingId/feed-horse');
@@ -276,14 +264,14 @@ Future<bool> feedHorse(int groupId, int standingId, int wheat, int water) async 
     }),
   );
   if (response.statusCode == 200) {
-    return true; // Successful level up
+    return true;
   } else {
     print("Failed to feed horse: ${response.body}");
-    return false; // Level up failed
+    return false;
   }
 }
 
-// api POST request to insert horse to shop
+// Add a horse definition to the shop catalogue.
 Future<bool> addHorseToShop(int level, String name, int priceBuy, String gender) async {
   final url = Uri.parse('http://10.0.2.2:5000/api/shop');
   final response = await http.post(
@@ -303,14 +291,14 @@ Future<bool> addHorseToShop(int level, String name, int priceBuy, String gender)
   );
 
   if (response.statusCode == 200) {
-    return true; // Successful addition
+    return true;
   } else {
     print("Failed to add horse to shop: ${response.body}");
-    return false; // Addition failed
+    return false;
   }
 }
 
-//api request to fetch shop items
+// Fetch all available horse listings from the shop.
 Future<List<ShopItem>> fetchShopItems() async {
   final response = await http.get(Uri.parse('http://10.0.2.2:5000/api/shop'));
 
@@ -322,7 +310,7 @@ Future<List<ShopItem>> fetchShopItems() async {
   }
 }
 
-//api request to buy horse from shop
+// Buy a horse from the shop and place it into a standing.
 Future<bool> buyHorseFromShop(int groupId, int standingId, int horseId) async {
   final url = Uri.parse(
     'http://10.0.2.2:5000/api/groups/$groupId/standings/$standingId/horse-from-shop/$horseId',
@@ -339,14 +327,14 @@ Future<bool> buyHorseFromShop(int groupId, int standingId, int horseId) async {
   }
 }
 
-//api request to delete horse from shop
+// Remove a horse definition from the shop catalogue.
 Future<bool> deleteHorseFromShop(int horseId) async {
   final url = Uri.parse('http://10.0.2.2:5000/api/shop/$horseId');
 
   final response = await http.delete(url);
 
   if (response.statusCode == 200) {
-    return true; // Successful deletion
+    return true;
   } else if (response.statusCode == 404) {
     throw Exception('Horse not found');
   } else {
@@ -354,7 +342,7 @@ Future<bool> deleteHorseFromShop(int horseId) async {
   }
 }
 
-//api request to calculate mating stuff
+// Fetch the duplicate chance for a mating pair.
 Future<DuplicateChance> getDuplicatingChance(int level1, int level2) async {
   final response = await http.get(
     Uri.parse('http://10.0.2.2:5000/api/duplicating-chance/$level1/$level2'),
@@ -381,20 +369,16 @@ class DuplicateChance {
   }
 }
 
-
-
-
-
-//class to hold the group data
+// Group data returned by the backend API.
 class Group {
-   int id;
-   String name;
-   String color;
-   int coins;
-   int water;
-   int wheat;
-   Stable stable;
-   Trainer trainer;
+  int id;
+  String name;
+  String color;
+  int coins;
+  int water;
+  int wheat;
+  Stable stable;
+  Trainer trainer;
 
   Group({
     required this.id,
@@ -419,21 +403,13 @@ class Group {
       trainer: Trainer.fromJson(json['trainer']),
     );
   }
-  // void _navigateToOverviewScreen(BuildContext context, Group group) {
-  //   Navigator.push(
-  //     context,
-  //     MaterialPageRoute(
-  //       builder: (context) => OverviewScreen(group: group),
-  //     ),
-  //   );
-  // }
 }
 
 class Stable {
-   int level;
-   int level_up_cost;
-   int number_of_full_standings;
-   int number_of_standings;
+  int level;
+  int level_up_cost;
+  int number_of_full_standings;
+  int number_of_standings;
 
   Stable({
     required this.level,
@@ -444,14 +420,11 @@ class Stable {
 
   factory Stable.fromJson(Map<String, dynamic> json) {
     return Stable(
-        level: json['level'],
-        level_up_cost: json['level_up_price'] ?? 0,
-        number_of_full_standings: json['number_of_full_standings'],
-        number_of_standings: json['number_of_standings']
-
-
+      level: json['level'],
+      level_up_cost: json['level_up_price'] ?? 0,
+      number_of_full_standings: json['number_of_full_standings'],
+      number_of_standings: json['number_of_standings'],
     );
-
   }
 }
 
@@ -484,11 +457,10 @@ class Standing {
   }
 }
 
-
 class Trainer {
-   int level;
-   int level_up_cost;
-   int number_of_trained_horses;
+  int level;
+  int level_up_cost;
+  int number_of_trained_horses;
 
   Trainer({
     required this.level,
@@ -496,13 +468,13 @@ class Trainer {
     required this.number_of_trained_horses,
   });
 
-   factory Trainer.fromJson(Map<String, dynamic> json) {
-     return Trainer(
-       level: json['level'],
-       level_up_cost: json['level_up_price'] ?? 0,
-       number_of_trained_horses: json['trained_today'] ?? 0,
-     );
-   }
+  factory Trainer.fromJson(Map<String, dynamic> json) {
+    return Trainer(
+      level: json['level'],
+      level_up_cost: json['level_up_price'] ?? 0,
+      number_of_trained_horses: json['trained_today'] ?? 0,
+    );
+  }
 }
 
 class ShopItem {
@@ -592,7 +564,7 @@ class Horse {
     );
   }
 
-  // Helper method to safely parse to int
+  // Safely convert backend values to integer values.
   static int _safeParseInt(dynamic value) {
     if (value == null) return 0;
     if (value is int) return value;

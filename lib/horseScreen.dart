@@ -18,7 +18,7 @@ class _HorsescreenState extends State<Horsescreen> {
     return await fetchStandings(widget.group!.id);
   }
 
-  //button to add a horse into standing
+  // Open the dialog for creating a horse in the selected standing.
   void _showAddHorseDialog(BuildContext context, Standing standing) {
     final nameController = TextEditingController();
     String selectedGender = 'muž';
@@ -132,18 +132,16 @@ class _HorsescreenState extends State<Horsescreen> {
                   return;
                 }
 
-                // Perform horse insertion
                 bool success = await insertHorse(
-                    widget.group!.id,
-                    standing.id,
-                    finalLevel, // Default level
-                    nameController.text,
-                    finalPrice, // Default price
-                    selectedGender
+                  widget.group!.id,
+                  standing.id,
+                  finalLevel,
+                  nameController.text,
+                  finalPrice,
+                  selectedGender,
                 );
 
                 if (success) {
-                  // Refresh the standings
                   setState(() {
                     fetchStandingsData();
                   });
@@ -202,8 +200,8 @@ class _HorsescreenState extends State<Horsescreen> {
                     return Padding(
                       padding: const EdgeInsets.all(16.0),
                       child: Container(
-                        width: screenWidth - 32, // Full width minus padding
-                        height: standing.horse != null ? screenHeight * 0.55 : screenHeight * 0.33, // Top box bigger, others smaller
+                        width: screenWidth - 32,
+                        height: standing.horse != null ? screenHeight * 0.55 : screenHeight * 0.33,
                         decoration: BoxDecoration(
                           color: Colors.white,
                           borderRadius: BorderRadius.circular(16),
@@ -370,7 +368,7 @@ class _HorsescreenState extends State<Horsescreen> {
                                                 bool success = await feedHorse(widget.group!.id, standing.id, 6,6);
                                                 if (success) {
                                                   setState(() {
-                                                    widget.onResourcesSpent(6); // Callback to update resources
+                                                    widget.onResourcesSpent(6);
                                                     fetchStandingsData();
                                                   });
                                                   ScaffoldMessenger.of(context).showSnackBar(
@@ -431,7 +429,7 @@ class _HorsescreenState extends State<Horsescreen> {
                                               ),
                                               child: Text('Vypustit'),
                                             ),
-                                            SizedBox(height: 8), // Add some space between the buttons
+                                            SizedBox(height: 8),
                                             ElevatedButton(
                                               onPressed: () async {
                                                 bool success = await sellHorse(widget.group!.id, standing.id, standing.horse!.id);
@@ -462,7 +460,6 @@ class _HorsescreenState extends State<Horsescreen> {
                                       ],
                                     ),
 
-                                  //no horse, only standing
                                   ] else ...[
                                     Row(
                                       mainAxisAlignment: MainAxisAlignment.spaceBetween,

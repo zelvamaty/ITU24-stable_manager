@@ -44,7 +44,6 @@ class _matingScreenState extends State<matingScreen> {
     String selectedGender = gender == 'male' ? 'muž' : 'žena';
     int finalPrice = 0;
     int finalLevel = level;
-    Standing? selectedStanding;
 
     showDialog(
       context: context,
@@ -137,15 +136,15 @@ class _matingScreenState extends State<matingScreen> {
                   return;
                 }
 
-                // Perform horse insertion
+                // Save the generated horse to the shop catalogue.
                 bool success = await addHorseToShop(
-                    finalLevel,
-                    nameController.text,
-                    finalPrice, // Default price
-                    selectedGender);
+                  finalLevel,
+                  nameController.text,
+                  finalPrice,
+                  selectedGender,
+                );
 
                 if (success) {
-                  // Refresh the standings
                   setState(() {
                     fetchShopItems();
                   });
@@ -181,7 +180,7 @@ class _matingScreenState extends State<matingScreen> {
       fetchStandingsData();
     }
 
-    // Filter available male and female horses
+    // Available horses for selection on the mating screen.
     List<Horse> availableMaleHorses = standing
         .where((s) => s.horse != null && s.horse!.gender == 'muž')
         .map((s) => s.horse!)
@@ -214,21 +213,25 @@ class _matingScreenState extends State<matingScreen> {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                // Male Horse Dropdown
                 DropdownButton<Horse>(
                   hint: Text(
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 30,),
-                      'Zvolit koně'
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontSize: 30,
+                    ),
+                    'Zvolit koně',
                   ),
                   value: selectedMaleHorse,
                   items: availableMaleHorses.map((Horse horse) {
                     return DropdownMenuItem<Horse>(
                       value: horse,
-                      child: Text(style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 30,),horse.name),
+                      child: Text(
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 30,
+                        ),
+                        horse.name,
+                      ),
                     );
                   }).toList(),
                   onChanged: (Horse? newValue) {
@@ -238,21 +241,25 @@ class _matingScreenState extends State<matingScreen> {
                   },
                 ),
                 SizedBox(height: 20),
-                // Female Horse Dropdown
                 DropdownButton<Horse>(
                   hint: Text(
                     style: TextStyle(
                       color: Colors.black,
-                    fontSize: 30,),
-                      'Zvolit klisnu'
+                      fontSize: 30,
+                    ),
+                    'Zvolit klisnu',
                   ),
                   value: selectedFemaleHorse,
                   items: availableFemaleHorses.map((Horse horse) {
                     return DropdownMenuItem<Horse>(
                       value: horse,
-                      child: Text(style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 30,),horse.name),
+                      child: Text(
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 30,
+                        ),
+                        horse.name,
+                      ),
                     );
                   }).toList(),
                   onChanged: (Horse? newValue) {

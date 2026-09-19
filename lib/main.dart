@@ -6,16 +6,9 @@ import 'shopScreen.dart';
 import 'moneyScreen.dart';
 import 'api_stuff.dart';
 
-import 'package:http/http.dart' as http;
-import 'dart:convert';
-
 void main() {
   runApp(const MyApp());
 }
-
-
-
-
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
@@ -47,81 +40,31 @@ class HomeScreen extends StatefulWidget {
   _HomeScreenState createState() => _HomeScreenState();
 }
 
-//screen for horses in the stable (2nd button)
-
-
-//screen for horses in the stable (2nd button)
-// class HorseScreen extends StatelessWidget {
-//   const HorseScreen();
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return const Scaffold(
-//       body: Center(child: Text('horses screen')),
-//     );
-//   }
-// }
-
-//screen for horses in the stable (2nd button)
-// class MatingScreen extends StatelessWidget {
-//   const MatingScreen();
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return const Scaffold(
-//       body: Center(child: Text('mating screen')),
-//     );
-//   }
-// }
-//
-// //screen for horses in the stable (2nd button)
-// class ShopScreen extends StatelessWidget {
-//   const ShopScreen();
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return const Scaffold(
-//       body: Center(child: Text('shop screen')),
-//     );
-//   }
-// }
-//
-// //screen for horses in the stable (2nd button)
-// class CoinScreen extends StatelessWidget {
-//   const CoinScreen();
-//
-//   @override
-//   Widget build(BuildContext context) {
-//     return const Scaffold(
-//       body: Center(child: Text('coin screen')),
-//     );
-//   }
-// }
-
-
 class _HomeScreenState extends State<HomeScreen> {
   int selectedScreen = 0;
-  String message = 'Hello, Flutter!';
-  int counter = 0;
-  String teamName = "Turbo konici wroom"; // Default title
-  Color teamColor = Colors.pink; // Default color
+  String teamName = "Turbo konici wroom";
+  Color teamColor = Colors.pink;
   Group? group;
-  _HomeScreenState({this.group});
 
+  @override
   void initState() {
     super.initState();
     _openFullScreenMenu();
   }
 
-// Update and show the menu
+  // Fetch available groups and open the selection modal.
   void _openFullScreenMenu() async {
     List<Group> groups = [];
-    String? errorMessage;
 
     try {
-      groups = await fetchGroups(); // Attempt to fetch groups
+      groups = await fetchGroups();
     } catch (e) {
-      errorMessage = 'Chyba při načítání dat: ${e.toString()}';
+      if (context.mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Chyba při načítání dat: ${e.toString()}')),
+        );
+      }
+      return;
     }
     showModalBottomSheet(
       context: context,
@@ -144,7 +87,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     IconButton(
                       icon: Icon(Icons.close),
                       onPressed: () {
-                        Navigator.pop(context); // Closes the modal
+                        Navigator.pop(context);
                       },
                     ),
                   ],
@@ -177,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-// Show dialog to add a new group
+  // Open the dialog for creating a new group.
   void _showAddGroupDialog() {
     TextEditingController nameController = TextEditingController();
     double red = 0, green = 0, blue = 0;
@@ -199,7 +142,7 @@ class _HomeScreenState extends State<HomeScreen> {
                     decoration: InputDecoration(labelText: 'Název skupiny'),
                   ),
                   const SizedBox(height: 8),
-                  // RGB Sliders
+                  // Adjust the RGB values to choose the group color.
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -237,7 +180,7 @@ class _HomeScreenState extends State<HomeScreen> {
                         },
                       ),
                       const SizedBox(height: 16),
-                      // Display selected color
+                      // Preview the selected color.
                       Container(
                         width: double.infinity,
                         height: 28,
@@ -264,7 +207,7 @@ class _HomeScreenState extends State<HomeScreen> {
                       await addGroup(colorHex, name);
                       Navigator.pop(context);
                       Navigator.of(context).pop();
-                      _openFullScreenMenu(); // Refresh the menu to show new group
+                      _openFullScreenMenu();
                     }
                   },
                   child: Text('Přidat'),
@@ -278,7 +221,7 @@ class _HomeScreenState extends State<HomeScreen> {
   }
 
 
-  // Helper method to create a menu item with a fading color and text
+  // Build a selectable card for a group from the modal list.
   Widget _buildMenuItem(Group group) {
     final color = Color(int.parse(group.color.replaceFirst('#', '0xff')));
     return GestureDetector(
@@ -288,13 +231,10 @@ class _HomeScreenState extends State<HomeScreen> {
           teamColor = color;
           this.group = group;
         });
-        Navigator.pop(context); // Close the bottom sheet after selection
-
-
+        Navigator.pop(context);
       },
-      child: Stack(  // Wrap in Stack to overlay the delete button
+      child: Stack(
         children: [
-          // boxes with the name of the group
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -325,13 +265,11 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
 
 
-          // Delete button
           Positioned(
             top: 8,
             right: 8,
             child: GestureDetector(
               onTap: () async {
-                // Show confirmation dialog
                 bool? confirm = await showDialog<bool>(
                   context: context,
                   builder: (BuildContext context) {
@@ -352,17 +290,12 @@ class _HomeScreenState extends State<HomeScreen> {
                   },
                 );
 
-                // If confirmed, delete the group
                 if (confirm == true) {
                   await deleteGroup(group.id);
-                  Navigator.pop(context); //
-                  _openFullScreenMenu(); // Refresh the menu
-                  // setState(() {
-                  //   groups.remove(group);
-                  // });
+                  Navigator.pop(context);
+                  _openFullScreenMenu();
                 }
               },
-              //shadow for the delete button
               child: Container(
                 padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                 decoration: BoxDecoration(
@@ -389,10 +322,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  // Helper method to create the bottom navigation bar
+  // Build the main bottom navigation bar.
   Widget _buildBottomBar() {
     return BottomAppBar(
-      color: teamColor, // Uses the color set by menu selection
+      color: teamColor,
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -410,17 +343,16 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-// Helper method to create a vertical divider between the buttons
+  // Add a subtle separator between bottom-bar icons.
   Widget _buildDivider() {
     return Container(
-      width: 2, // Adjust width to control divider thickness
-      height: 80, // Height to match icon size
-      color:
-          Colors.black.withOpacity(0.5), // Adjust color and opacity as needed
+      width: 2,
+      height: 80,
+      color: Colors.black.withOpacity(0.5),
     );
   }
 
-  // Helper method to create a bottom button with an icon and action
+  // Build a single bottom-bar action button.
   Widget _buildBottomButton(String imagePath, int screen) {
     bool isSelected = selectedScreen == screen;
 
@@ -432,7 +364,6 @@ class _HomeScreenState extends State<HomeScreen> {
       },
       child: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
-        //shadow around the icon
         child: Container(
           decoration: BoxDecoration(
             color: isSelected ? Colors.black.withOpacity(0.01) : Colors.transparent,
@@ -446,7 +377,6 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ] : [],
           ),
-          // shadow around the icon and adding the icon itself
           child: Container(
             decoration: BoxDecoration(
               boxShadow: isSelected  ? [] : [
@@ -525,7 +455,6 @@ class _HomeScreenState extends State<HomeScreen> {
     ];
 
     return Scaffold(
-      // Top of the screen bar
       appBar: AppBar(
         title: Text(teamName),
         backgroundColor: teamColor,
@@ -549,7 +478,6 @@ class _HomeScreenState extends State<HomeScreen> {
                 borderRadius: BorderRadius.circular(50),
               ),
 
-              // coins icon and its number
               child: Row(
                 children: [
                   Padding(
@@ -599,13 +527,10 @@ class _HomeScreenState extends State<HomeScreen> {
         ],
       ),
       body: IndexedStack(
-        index:
-            selectedScreen, //
-        children: [
-          ..._screens, // Your screen list
-        ],
+        index: selectedScreen,
+        children: _screens,
       ),
-      bottomNavigationBar: _buildBottomBar(), // Bottom navigation bar
+      bottomNavigationBar: _buildBottomBar(),
     );
   }
 }

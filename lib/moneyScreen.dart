@@ -13,8 +13,6 @@ class moneyScreen extends StatefulWidget {
 class _moneyScreenState extends State<moneyScreen> {
   int coinAmount = 0;
 
-  final TextEditingController _controller = TextEditingController();
-
   void _incrementCoins1() {
     setState(() {
       coinAmount += 1;
@@ -63,7 +61,6 @@ class _moneyScreenState extends State<moneyScreen> {
     });
   }
 
-
   Widget buildCoinRow({
     required VoidCallback onDecrementPressed,
     required VoidCallback onIncrementPressed,
@@ -72,7 +69,7 @@ class _moneyScreenState extends State<moneyScreen> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        // Minus Button
+        // Decrease the selected coin amount.
         ElevatedButton(
           onPressed: onDecrementPressed,
           style: ElevatedButton.styleFrom(
@@ -89,7 +86,6 @@ class _moneyScreenState extends State<moneyScreen> {
           ),
         ),
         SizedBox(width: 40),
-
         Text(
           '$value',
           style: TextStyle(
@@ -98,7 +94,7 @@ class _moneyScreenState extends State<moneyScreen> {
           ),
         ),
         SizedBox(width: 40),
-        // Plus Button
+        // Increase the selected coin amount.
         ElevatedButton(
           onPressed: onIncrementPressed,
           style: ElevatedButton.styleFrom(
@@ -114,21 +110,19 @@ class _moneyScreenState extends State<moneyScreen> {
             ),
           ),
         ),
-
       ],
     );
   }
 
   @override
   Widget build(BuildContext context) {
-    Group group;
     final screenHeight = MediaQuery.of(context).size.height;
-    final screenWidth = MediaQuery.of(context).size.width;
-    int groupID = widget.group?.id??0;
+    int groupID = widget.group?.id ?? 0;
+
     return Scaffold(
       body: Stack(
         children: [
-          // Background image for the entire screen
+          // Full-screen background image for the money screen.
           Container(
             decoration: BoxDecoration(
               image: DecorationImage(
@@ -141,11 +135,10 @@ class _moneyScreenState extends State<moneyScreen> {
               ),
             ),
           ),
-
           Positioned(
             left: 0,
             right: 0,
-            top: screenHeight * 0.08, // adjust this value to position vertically
+            top: screenHeight * 0.08,
             child: Center(
               child: Column(
                 children: [
@@ -156,7 +149,6 @@ class _moneyScreenState extends State<moneyScreen> {
                       fontWeight: FontWeight.bold,
                     ),
                   ),
-                  //added offset
                   SizedBox(height: 40),
                   Text(
                     '$coinAmount',
@@ -166,36 +158,25 @@ class _moneyScreenState extends State<moneyScreen> {
                     ),
                   ),
                   SizedBox(height: 60),
-
                   buildCoinRow(
                     onDecrementPressed: _decrementCoins1,
                     onIncrementPressed: _incrementCoins1,
-                    value: 1
+                    value: 1,
                   ),
-
-
                   SizedBox(height: 20),
-
                   buildCoinRow(
                     onDecrementPressed: _decrementCoins5,
                     onIncrementPressed: _incrementCoins5,
-                    value: 5
+                    value: 5,
                   ),
                   SizedBox(height: 20),
-
                   buildCoinRow(
                     onDecrementPressed: _decrementCoins10,
                     onIncrementPressed: _incrementCoins10,
-                    value: 10
+                    value: 10,
                   ),
-
-                  // buttons for minus and adding
-                  //
                   SizedBox(height: 40),
-
-                  // Add coins button
                   ElevatedButton(
-
                     onPressed: () async {
                       await addCoins(groupID, coinAmount);
                       widget.onCoinsAdded(coinAmount);
@@ -214,14 +195,10 @@ class _moneyScreenState extends State<moneyScreen> {
                       ),
                     ),
                   ),
-
-
-
                 ],
               ),
             ),
           ),
-
         ],
       ),
     );
